@@ -128,6 +128,14 @@ void pulseaudio_init(void) {
 	if (create_empty_dir_as_user(homeusercfg, 0700))
 		fs_logger2("create", homeusercfg);
 
+    // also create ~/.config/pulse/client.conf.d for dynamically change support
+    // can use firejail --put to dynamically change pulse server.
+    char *homeusercfgdd = NULL;
+	if (asprintf(&homeusercfgdd, "%s/client.conf.d", homeusercfg) == -1)
+		errExit("asprintf");
+	if (create_empty_dir_as_user(homeusercfgdd, 0700))
+		fs_logger2("create", homeusercfgdd);
+
 	// if ~/.config/pulse exists and there are no symbolic links, mount the new directory
 	// else set environment variable
 	int fd = safe_fd(homeusercfg, O_PATH|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
